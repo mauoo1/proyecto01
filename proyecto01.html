@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyecto 01 — SIPROSA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul:     #1A5276;
+  --azul2:    #2E86C1;
+  --azul3:    #D6EAF8;
+  --verde:    #1E8449;
+  --verde2:   #A9DFBF;
+  --rojo:     #C0392B;
+  --rojo2:    #F1948A;
+  --amarillo: #F9E79F;
+  --naranja:  #E67E22;
+  --gris:     #F4F6F7;
+  --gris2:    #D5D8DC;
+  --texto:    #1C2833;
+  --texto2:   #5D6D7E;
+  --blanco:   #FFFFFF;
+  --shadow:   0 2px 12px rgba(26,82,118,0.10);
+  --radius:   12px;
+  --script:   "https://script.google.com/macros/s/AKfycbxIwoH7cCAUUBluxaNixSkwXHJiuO5cU5eHWxYpsSoRKZrlS8GNKFP5_vREsMSK7XM/exec";
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--gris);
+  color: var(--texto);
+  min-height: 100vh;
+}
+
+/* ── LOGIN ── */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--azul) 0%, var(--azul2) 100%);
+}
+.login-card {
+  background: var(--blanco);
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  text-align: center;
+}
+.login-logo {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--azul2);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.login-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--azul);
+  margin-bottom: 4px;
+}
+.login-sub {
+  font-size: 13px;
+  color: var(--texto2);
+  margin-bottom: 32px;
+}
+.login-card input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--gris2);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  margin-bottom: 12px;
+  outline: none;
+  transition: border-color .2s;
+}
+.login-card input:focus { border-color: var(--azul2); }
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: var(--azul);
+  color: var(--blanco);
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s, transform .1s;
+  margin-top: 4px;
+}
+.btn-login:hover { background: var(--azul2); }
+.btn-login:active { transform: scale(0.98); }
+.login-error {
+  color: var(--rojo);
+  font-size: 13px;
+  margin-top: 10px;
+  display: none;
+}
+
+/* ── APP SHELL ── */
+#app { display: none; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 220px;
+  height: 100vh;
+  background: var(--azul);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform .3s;
+}
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.sidebar-logo .s-brand {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.sidebar-logo .s-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--blanco);
+  margin-top: 2px;
+}
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 0;
+  overflow-y: auto;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: rgba(255,255,255,0.70);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all .18s;
+}
+.nav-item:hover { background: rgba(255,255,255,0.08); color: var(--blanco); }
+.nav-item.active {
+  background: rgba(255,255,255,0.12);
+  color: var(--blanco);
+  border-left-color: var(--verde2);
+}
+.nav-icon { font-size: 18px; width: 20px; text-align: center; }
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+.caps-badge {
+  background: rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.80);
+  margin-bottom: 10px;
+}
+.btn-logout {
+  width: 100%;
+  padding: 9px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.20);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.80);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.btn-logout:hover { background: rgba(255,255,255,0.18); }
+
+/* MAIN */
+.main {
+  margin-left: 220px;
+  min-height: 100vh;
+  padding: 28px;
+}
+.page-header {
+  margin-bottom: 24px;
+}
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--azul);
+}
+.page-sub {
+  font-size: 13px;
+  color: var(--texto2);
+  margin-top: 3px;
+}
+
+/* CARDS */
+.card {
+  background: var(--blanco);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--azul);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gris);
+}
+
+/* STATS ROW */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--blanco);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--azul2);
+}
+.stat-card.verde { border-left-color: var(--verde); }
+.stat-card.rojo  { border-left-color: var(--rojo2); }
+.stat-card.naranja { border-left-color: var(--naranja); }
+.stat-label { font-size: 12px; color: var(--texto2); margin-bottom: 4px; }
+.stat-val   { font-size: 26px; font-weight: 600; color: var(--azul); font-family: 'DM Mono', monospace; }
+
+/* BOTONES */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all .18s;
+}
+.btn-primary { background: var(--azul); color: var(--blanco); }
+.btn-primary:hover { background: var(--azul2); }
+.btn-success { background: var(--verde); color: var(--blanco); }
+.btn-success:hover { opacity: 0.88; }
+.btn-danger  { background: var(--rojo2); color: var(--blanco); }
+.btn-danger:hover { opacity: 0.88; }
+.btn-ghost   { background: var(--gris); color: var(--texto); border: 1px solid var(--gris2); }
+.btn-ghost:hover { background: var(--gris2); }
+.btn-sm { padding: 6px 11px; font-size: 12px; }
+
+/* TABLA */
+.tabla-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  background: var(--azul);
+  color: var(--blanco);
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  white-space: nowrap;
+}
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gris);
+  vertical-align: middle;
+}
+tr:hover td { background: var(--azul3); }
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-verde   { background: var(--verde2); color: var(--verde); }
+.badge-rojo    { background: var(--rojo2);  color: var(--blanco); }
+.badge-amarillo{ background: var(--amarillo); color: #7D6608; }
+
+/* FORMULARIO */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 12px; font-weight: 500; color: var(--texto2); }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px 12px;
+  border: 1.5px solid var(--gris2);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color .2s;
+  background: var(--blanco);
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--azul2); }
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 500;
+  display: none;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--blanco);
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.modal-title { font-size: 16px; font-weight: 600; color: var(--azul); }
+.btn-close {
+  background: none; border: none;
+  font-size: 22px; cursor: pointer; color: var(--texto2); line-height: 1;
+}
+
+/* VACUNAS GRID */
+.vac-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+.vac-item {
+  background: var(--gris);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.vac-name { font-size: 12px; font-weight: 500; color: var(--azul); }
+.vac-input-row { display: flex; align-items: center; gap: 6px; }
+.vac-input-row label { font-size: 11px; color: var(--texto2); min-width: 28px; }
+.vac-input-row input {
+  width: 60px;
+  padding: 5px 8px;
+  border: 1.5px solid var(--gris2);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'DM Mono', monospace;
+  text-align: center;
+}
+
+/* CIRCULAR */
+.circular-table th { font-size: 11px; }
+.circular-table td { font-size: 12px; text-align: center; }
+.circular-table td:first-child { text-align: left; font-weight: 500; }
+
+/* SEARCH */
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.search-bar input {
+  flex: 1;
+  min-width: 200px;
+  padding: 9px 14px;
+  border: 1.5px solid var(--gris2);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+}
+.search-bar input:focus { border-color: var(--azul2); }
+
+/* LOADING */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--texto2);
+  font-size: 14px;
+}
+.spinner {
+  display: inline-block;
+  width: 24px; height: 24px;
+  border: 3px solid var(--gris2);
+  border-top-color: var(--azul2);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin-bottom: 10px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* DÍAS GRID */
+.dias-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+.dia-btn {
+  padding: 8px 4px;
+  border: 1.5px solid var(--gris2);
+  border-radius: 8px;
+  background: var(--blanco);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all .15s;
+}
+.dia-btn:hover { border-color: var(--azul2); background: var(--azul3); }
+.dia-btn.selected { border-color: var(--azul); background: var(--azul); color: var(--blanco); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 16px; padding-top: 70px; }
+  .topbar { display: flex; }
+  .dias-grid { grid-template-columns: repeat(5,1fr); }
+}
+.topbar {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: var(--azul);
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 200;
+}
+.topbar-title { color: var(--blanco); font-weight: 600; font-size: 15px; }
+.btn-menu {
+  background: none; border: none;
+  color: var(--blanco); font-size: 22px; cursor: pointer; line-height: 1;
+}
+.overlay-bg {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99;
+}
+.overlay-bg.open { display: block; }
+
+/* ALERTAS */
+.alerta-row td { background: #FEF9E7; }
+.alerta-row.vencido td { background: #FDEDEC; }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--blanco);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+.toast.ok  { background: var(--verde); }
+.toast.err { background: var(--rojo); }
+
+/* STOCK */
+.stock-table .stock-bajo { color: var(--rojo); font-weight: 600; }
+.stock-table .stock-ok   { color: var(--verde); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">SIPROSA</div>
+    <div class="login-title">Proyecto 01</div>
+    <div class="login-sub">Sistema de Atención Primaria</div>
+    <input type="text" id="inp-user" placeholder="Usuario" autocomplete="off">
+    <input type="password" id="inp-pass" placeholder="Contraseña">
+    <input type="text" id="inp-caps" placeholder="Nombre del CAPS">
+    <button class="btn-login" onclick="doLogin()">Ingresar</button>
+    <div class="login-error" id="login-err">Usuario o contraseña incorrectos</div>
+  </div>
+</div>
+
+<!-- TOPBAR MOBILE -->
+<div class="topbar" id="topbar">
+  <button class="btn-menu" onclick="toggleSidebar()">☰</button>
+  <span class="topbar-title">Proyecto 01</span>
+  <span style="width:32px"></span>
+</div>
+<div class="overlay-bg" id="overlay-bg" onclick="toggleSidebar()"></div>
+
+<!-- APP -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="s-brand">SIPROSA</div>
+      <div class="s-title">Proyecto 01</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="navTo('dashboard')">
+        <span class="nav-icon">🏠</span> Inicio
+      </div>
+      <div class="nav-item" onclick="navTo('pacientes')">
+        <span class="nav-icon">👶</span> Pacientes
+      </div>
+      <div class="nav-item" onclick="navTo('alertas')">
+        <span class="nav-icon">⚠️</span> Alertas
+      </div>
+      <div class="nav-item" onclick="navTo('diario')">
+        <span class="nav-icon">📅</span> Control Diario
+      </div>
+      <div class="nav-item" onclick="navTo('stock')">
+        <span class="nav-icon">💉</span> Stock de Vacunas
+      </div>
+      <div class="nav-item" onclick="navTo('circular')">
+        <span class="nav-icon">📋</span> Circular N°11
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="caps-badge" id="caps-badge">CAPS: —</div>
+      <button class="btn-logout" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="main-content">
+    <!-- DASHBOARD -->
+    <div id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">Bienvenido</div>
+        <div class="page-sub" id="dash-caps-sub">CAPS</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Total Pacientes</div><div class="stat-val" id="stat-total">—</div></div>
+        <div class="stat-card rojo"><div class="stat-label">Controles Vencidos</div><div class="stat-val" id="stat-vencidos">—</div></div>
+        <div class="stat-card naranja"><div class="stat-label">Próximos (7 días)</div><div class="stat-val" id="stat-proximos">—</div></div>
+        <div class="stat-card verde"><div class="stat-label">Al día</div><div class="stat-val" id="stat-aldia">—</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Accesos rápidos</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="navTo('pacientes');abrirFormPaciente()">+ Nuevo Paciente</button>
+          <button class="btn btn-ghost"   onclick="navTo('diario')">Registrar Vacunas</button>
+          <button class="btn btn-ghost"   onclick="navTo('circular')">Ver Circular N°11</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PACIENTES -->
+    <div id="page-pacientes" style="display:none">
+      <div class="page-header">
+        <div class="page-title">Registro de Pacientes</div>
+        <div class="page-sub">CyD — Crecimiento y Desarrollo</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <div class="search-bar" style="margin:0;flex:1">
+            <input type="text" id="buscar-pac" placeholder="Buscar por nombre o DNI..." oninput="filtrarPacientes()">
+          </div>
+          <button class="btn btn-primary" onclick="abrirFormPaciente()">+ Nuevo Paciente</button>
+        </div>
+        <div class="tabla-wrap">
+          <table id="tabla-pacientes">
+            <thead>
+              <tr>
+                <th>Nombre</th><th>DNI</th><th>Edad</th><th>Estado Nut.</th>
+                <th>Leche</th><th>Próx. Control</th><th>Estado</th><th>Certificado</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="body-pacientes">
+              <tr><td colspan="9"><div class="loading"><div class="spinner"></div><br>Cargando...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERTAS -->
+    <div id="page-alertas" style="display:none">
+      <div class="page-header">
+        <div class="page-title">⚠️ Alertas</div>
+        <div class="page-sub">Pacientes con control vencido o próximo</div>
+      </div>
+      <div class="card">
+        <div class="tabla-wrap">
+          <table>
+            <thead>
+              <tr><th>Nombre</th><th>DNI</th><th>Teléfono</th><th>Dirección</th><th>Próx. Control</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="body-alertas">
+              <tr><td colspan="6"><div class="loading"><div class="spinner"></div><br>Cargando...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROL DIARIO -->
+    <div id="page-diario" style="display:none">
+      <div class="page-header">
+        <div class="page-title">Control Diario de Vacunas</div>
+        <div class="page-sub">Registrá las dosis aplicadas por día</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:flex-end">
+          <div class="form-group">
+            <label>Mes</label>
+            <select id="sel-mes" onchange="cargarDiario()">
+              <option value="1">Enero</option><option value="2">Febrero</option>
+              <option value="3">Marzo</option><option value="4">Abril</option>
+              <option value="5">Mayo</option><option value="6">Junio</option>
+              <option value="7">Julio</option><option value="8">Agosto</option>
+              <option value="9">Septiembre</option><option value="10">Octubre</option>
+              <option value="11">Noviembre</option><option value="12">Diciembre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Año</label>
+            <input type="number" id="inp-anio" value="2026" min="2020" max="2099" onchange="cargarDiario()" style="width:90px">
+          </div>
+          <div class="form-group">
+            <label>Día</label>
+            <input type="number" id="inp-dia" value="1" min="1" max="31" style="width:70px">
+          </div>
+        </div>
+        <div id="diario-container">
+          <div class="loading"><div class="spinner"></div><br>Cargando vacunas...</div>
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn btn-success" onclick="guardarDiario()">💾 Guardar dosis del día</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STOCK -->
+    <div id="page-stock" style="display:none">
+      <div class="page-header">
+        <div class="page-title">Stock de Vacunas</div>
+        <div class="page-sub">Control de inventario</div>
+      </div>
+      <div class="card">
+        <div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="guardarStock()">💾 Guardar stock</button>
+          <button class="btn btn-ghost"   onclick="cargarStock()">↺ Actualizar</button>
+        </div>
+        <div class="tabla-wrap">
+          <table class="stock-table" id="tabla-stock">
+            <thead>
+              <tr>
+                <th>Vacuna</th>
+                <th>Stock Inicial</th>
+                <th>x Remito</th>
+                <th>x Redistrib.</th>
+                <th>Total Ingresos</th>
+                <th>Aplicadas</th>
+                <th>Redistrib.</th>
+                <th>Decomiso</th>
+                <th>Total Egresos</th>
+                <th>Stock Final</th>
+                <th>Observaciones</th>
+              </tr>
+            </thead>
+            <tbody id="body-stock"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CIRCULAR 11 -->
+    <div id="page-circular" style="display:none">
+      <div class="page-header">
+        <div class="page-title">Circular N°11</div>
+        <div class="page-sub">Informe mensual — DAPC-03</div>
+      </div>
+      <div class="card" style="text-align:center;padding:16px 20px;margin-bottom:16px">
+        <div style="font-size:12px;color:var(--texto2);letter-spacing:1px;text-transform:uppercase">SIPROSA — División Inmunizaciones</div>
+        <div style="font-size:15px;font-weight:600;color:var(--azul);margin-top:2px">Informe Mensual de Niños, Embarazadas y Nodrizas Bajo Control</div>
+        <div style="font-size:11px;color:var(--texto2);margin-top:4px">Presentar el 1° día hábil de cada mes en el Área Operativa</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;align-items:flex-end">
+          <div class="form-group">
+            <label>Mes</label>
+            <select id="sel-mes-circ" onchange="cargarCircular()">
+              <option value="1">Enero</option><option value="2">Febrero</option>
+              <option value="3">Marzo</option><option value="4">Abril</option>
+              <option value="5">Mayo</option><option value="6">Junio</option>
+              <option value="7">Julio</option><option value="8">Agosto</option>
+              <option value="9">Septiembre</option><option value="10">Octubre</option>
+              <option value="11">Noviembre</option><option value="12">Diciembre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Año</label>
+            <input type="number" id="inp-anio-circ" value="2026" style="width:90px" onchange="cargarCircular()">
+          </div>
+        </div>
+        <div class="tabla-wrap">
+          <table class="circular-table">
+            <thead>
+              <tr>
+                <th style="text-align:left">Grupo de Edad</th>
+                <th>Bajo Peso</th><th>Riesgo Nutr.</th><th>Normal</th>
+                <th>Sobrepeso</th><th>Obeso</th><th>En Recup.</th>
+                <th>Fam. Riesgo</th><th>TOTAL</th>
+              </tr>
+            </thead>
+            <tbody id="body-circular"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Embarazadas / Nodrizas manuales -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;flex-wrap:wrap">
+        <div class="card">
+          <div class="card-title">N° Embarazadas Bajo Control</div>
+          <table style="width:100%;font-size:13px">
+            <tr><td>Eutróficas</td><td><input type="number" id="emb-eut" style="width:70px;padding:5px 8px;border:1.5px solid var(--gris2);border-radius:6px;font-size:13px"></td></tr>
+            <tr><td>Desnutridas</td><td><input type="number" id="emb-des" style="width:70px;padding:5px 8px;border:1.5px solid var(--gris2);border-radius:6px;font-size:13px"></td></tr>
+            <tr><td>Obesas</td><td><input type="number" id="emb-obe" style="width:70px;padding:5px 8px;border:1.5px solid var(--gris2);border-radius:6px;font-size:13px"></td></tr>
+            <tr><td style="font-weight:600">TOTAL</td><td><span id="emb-total" style="font-weight:600;font-family:'DM Mono',monospace">0</span></td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">N° Nodrizas Bajo Control</div>
+          <table style="width:100%;font-size:13px">
+            <tr><td>Eutróficas</td><td><input type="number" id="nod-eut" style="width:70px;padding:5px 8px;border:1.5px solid var(--gris2);border-radius:6px;font-size:13px"></td></tr>
+            <tr><td>Bajo Peso</td><td><input type="number" id="nod-bp"  style="width:70px;padding:5px 8px;border:1.5px solid var(--gris2);border-radius:6px;font-size:13px"></td></tr>
+            <tr><td style="font-weight:600">TOTAL</td><td><span id="nod-total" style="font-weight:600;font-family:'DM Mono',monospace">0</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- MODAL PACIENTE -->
+<div class="modal-overlay" id="modal-paciente">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-pac-title">Nuevo Paciente</div>
+      <button class="btn-close" onclick="cerrarModal('modal-paciente')">×</button>
+    </div>
+    <input type="hidden" id="pac-id">
+    <div class="form-grid">
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Apellido y Nombre *</label>
+        <input type="text" id="pac-nombre" placeholder="APELLIDO Nombre">
+      </div>
+      <div class="form-group">
+        <label>DNI *</label>
+        <input type="text" id="pac-dni" placeholder="Sin puntos">
+      </div>
+      <div class="form-group">
+        <label>Fecha de Nacimiento</label>
+        <input type="date" id="pac-fnac">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Dirección</label>
+        <input type="text" id="pac-dir" placeholder="Calle, número, barrio">
+      </div>
+      <div class="form-group">
+        <label>Teléfono / Contacto</label>
+        <input type="text" id="pac-tel">
+      </div>
+      <div class="form-group">
+        <label>Estado Nutricional</label>
+        <select id="pac-estnut">
+          <option value="">— Seleccionar —</option>
+          <option>BAJO PESO</option>
+          <option>RIESGO NUTRICIONAL</option>
+          <option>NORMAL</option>
+          <option>SOBREPESO</option>
+          <option>OBESO</option>
+          <option>EN RECUPERACIÓN</option>
+          <option>FAMILIA DE RIESGO</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Entrega de Leche</label>
+        <select id="pac-leche">
+          <option value="">— Seleccionar —</option>
+          <option>2</option><option>1</option><option>0</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Certificado</label>
+        <select id="pac-cert">
+          <option value="">— Seleccionar —</option>
+          <option>ESCOLAR</option>
+          <option>ANSES</option>
+          <option>NADA</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Próximo Control</label>
+        <input type="date" id="pac-proxcontrol">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Vacunas Colocadas</label>
+        <input type="text" id="pac-vacunas" placeholder="Ej: BCG 01/01/2026, QDENGA 15/03/2026">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-success" onclick="guardarPaciente()">💾 Guardar</button>
+      <button class="btn btn-ghost"   onclick="cerrarModal('modal-paciente')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbxIwoH7cCAUUBluxaNixSkwXHJiuO5cU5eHWxYpsSoRKZrlS8GNKFP5_vREsMSK7XM/exec";
+
+// Credenciales (solo vos por ahora)
+const USUARIOS = [
+  { user: "mauri", pass: "siprosa2026", caps: null } // caps null = usar el que ingrese
+];
+
+const VACUNAS = [
+  "BCG","QDENGA","HEPATITIS B 10µg (pediátrica)","HEPATITIS B 20µg (adulto)",
+  "HEPATITIS A (pediátrica)","NEUMOCOCO CONJUGADA 20","NEUMOCOCO 23 VALENTE",
+  "QUINTUPLE (DPT+Hib+HB)","TRIPLE BACTERIANA CELULAR (DPT)",
+  "TRIPLE BACTERIANA ACELULAR (DPTa)","DOBLE BACTERIANA (dt)","TRIPLE VIRAL (SRP)",
+  "VIRUS PAPILOMA HUMANO (HPV)","ANTIGRIPAL PEDIÁTRICA",
+  "ANTIGRIPAL ADULTO — INFLUVAC","ANTIGRIPAL ADULTO — AGRIPAL",
+  "ANTIGRIPAL ADULTO — FLUXVIR","ROTAVIRUS","SALK","VARICELA",
+  "MENINGOCÓCCICA 4V","VSR"
+];
+
+let SESSION = null;
+let pacientesData = [];
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+function doLogin() {
+  const u = document.getElementById('inp-user').value.trim();
+  const p = document.getElementById('inp-pass').value.trim();
+  const c = document.getElementById('inp-caps').value.trim();
+  const found = USUARIOS.find(x => x.user === u && x.pass === p);
+  if (!found || !c) {
+    document.getElementById('login-err').style.display = 'block';
+    document.getElementById('login-err').textContent =
+      !c ? 'Ingresá el nombre del CAPS' : 'Usuario o contraseña incorrectos';
+    return;
+  }
+  SESSION = { user: u, caps: c };
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('caps-badge').textContent = 'CAPS: ' + c;
+  document.getElementById('dash-caps-sub').textContent = c;
+  document.getElementById('topbar').style.display = 'flex';
+  cargarDashboard();
+}
+
+function doLogout() {
+  SESSION = null;
+  location.reload();
+}
+
+document.getElementById('inp-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function navTo(page) {
+  document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).style.display = 'block';
+  document.querySelector(`.nav-item[onclick="navTo('${page}')"]`).classList.add('active');
+  if (page === 'pacientes') cargarPacientes();
+  if (page === 'alertas')   cargarAlertas();
+  if (page === 'diario')    initDiario();
+  if (page === 'stock')     cargarStock();
+  if (page === 'circular')  cargarCircular();
+  if (window.innerWidth < 768) closeSidebar();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay-bg').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay-bg').classList.remove('open');
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function api(params) {
+  params.caps = SESSION.caps;
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(API + '?' + qs);
+  return res.json();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(msg, tipo='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + tipo;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+async function cargarDashboard() {
+  try {
+    const r = await api({ action: 'getPacientes' });
+    pacientesData = r.pacientes || [];
+    const hoy = new Date();
+    let vencidos=0, proximos=0, aldia=0;
+    pacientesData.forEach(p => {
+      const estado = calcEstado(p.PROXIMO_CONTROL);
+      if (estado === 'VENCIDO')  vencidos++;
+      else if (estado === 'PRÓXIMO') proximos++;
+      else if (estado === 'AL DÍA') aldia++;
+    });
+    document.getElementById('stat-total').textContent    = pacientesData.length;
+    document.getElementById('stat-vencidos').textContent = vencidos;
+    document.getElementById('stat-proximos').textContent = proximos;
+    document.getElementById('stat-aldia').textContent    = aldia;
+  } catch(e) { console.error(e); }
+}
+
+function calcEstado(fechaStr) {
+  if (!fechaStr) return '';
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const f   = new Date(fechaStr); f.setHours(0,0,0,0);
+  const diff = Math.round((f - hoy) / 86400000);
+  if (diff < 0)  return 'VENCIDO';
+  if (diff <= 7) return 'PRÓXIMO';
+  return 'AL DÍA';
+}
+
+function calcEdad(fechaStr) {
+  if (!fechaStr) return '';
+  const hoy = new Date();
+  const nac = new Date(fechaStr);
+  const meses = Math.floor((hoy - nac) / (1000*60*60*24*30.44));
+  if (meses < 24) return meses + ' m';
+  return Math.floor(meses/12) + ' a';
+}
+
+// ── PACIENTES ─────────────────────────────────────────────────────────────────
+async function cargarPacientes() {
+  document.getElementById('body-pacientes').innerHTML =
+    '<tr><td colspan="9"><div class="loading"><div class="spinner"></div><br>Cargando...</div></td></tr>';
+  try {
+    const r = await api({ action: 'getPacientes' });
+    pacientesData = r.pacientes || [];
+    renderPacientes(pacientesData);
+  } catch(e) { toast('Error al cargar pacientes','err'); }
+}
+
+function renderPacientes(lista) {
+  const tbody = document.getElementById('body-pacientes');
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--texto2);padding:30px">Sin pacientes registrados</td></tr>';
+    return;
+  }
+  tbody.innerHTML = lista.map(p => {
+    const estado = calcEstado(p.PROXIMO_CONTROL);
+    const badge  = estado === 'VENCIDO'  ? 'badge-rojo' :
+                   estado === 'PRÓXIMO'  ? 'badge-amarillo' : 'badge-verde';
+    return `<tr>
+      <td><strong>${p.APELLIDO_NOMBRE||'—'}</strong></td>
+      <td>${p.DNI||'—'}</td>
+      <td>${calcEdad(p.FECHA_NAC)}</td>
+      <td>${p.ESTADO_NUT||'—'}</td>
+      <td>${p.ENTREGA_LECHE||'—'}</td>
+      <td>${formatFecha(p.PROXIMO_CONTROL)}</td>
+      <td><span class="badge ${badge}">${estado||'—'}</span></td>
+      <td>${p.CERTIFICADO||'—'}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick='editarPaciente(${JSON.stringify(p)})'>✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarPaciente('${p.ID}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarPacientes() {
+  const q = document.getElementById('buscar-pac').value.toLowerCase();
+  const filtrado = pacientesData.filter(p =>
+    (p.APELLIDO_NOMBRE||'').toLowerCase().includes(q) ||
+    (p.DNI||'').includes(q)
+  );
+  renderPacientes(filtrado);
+}
+
+function abrirFormPaciente() {
+  document.getElementById('modal-pac-title').textContent = 'Nuevo Paciente';
+  document.getElementById('pac-id').value      = '';
+  ['pac-nombre','pac-dni','pac-dir','pac-tel','pac-vacunas'].forEach(id => document.getElementById(id).value = '');
+  ['pac-fnac','pac-proxcontrol'].forEach(id => document.getElementById(id).value = '');
+  ['pac-estnut','pac-leche','pac-cert'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('modal-paciente').classList.add('open');
+}
+
+function editarPaciente(p) {
+  document.getElementById('modal-pac-title').textContent = 'Editar Paciente';
+  document.getElementById('pac-id').value          = p.ID||'';
+  document.getElementById('pac-nombre').value      = p.APELLIDO_NOMBRE||'';
+  document.getElementById('pac-dni').value         = p.DNI||'';
+  document.getElementById('pac-fnac').value        = p.FECHA_NAC||'';
+  document.getElementById('pac-dir').value         = p.DIRECCION||'';
+  document.getElementById('pac-tel').value         = p.TELEFONO||'';
+  document.getElementById('pac-estnut').value      = p.ESTADO_NUT||'';
+  document.getElementById('pac-leche').value       = p.ENTREGA_LECHE||'';
+  document.getElementById('pac-cert').value        = p.CERTIFICADO||'';
+  document.getElementById('pac-proxcontrol').value = p.PROXIMO_CONTROL||'';
+  document.getElementById('pac-vacunas').value     = p.VACUNAS||'';
+  document.getElementById('modal-paciente').classList.add('open');
+}
+
+async function guardarPaciente() {
+  const nombre = document.getElementById('pac-nombre').value.trim();
+  const dni    = document.getElementById('pac-dni').value.trim();
+  if (!nombre || !dni) { toast('Nombre y DNI son obligatorios','err'); return; }
+  try {
+    await api({
+      action:         'savePaciente',
+      id:             document.getElementById('pac-id').value,
+      apellido_nombre:nombre,
+      dni,
+      fecha_nac:      document.getElementById('pac-fnac').value,
+      direccion:      document.getElementById('pac-dir').value,
+      telefono:       document.getElementById('pac-tel').value,
+      estado_nut:     document.getElementById('pac-estnut').value,
+      entrega_leche:  document.getElementById('pac-leche').value,
+      certificado:    document.getElementById('pac-cert').value,
+      proximo_control:document.getElementById('pac-proxcontrol').value,
+      vacunas:        document.getElementById('pac-vacunas').value,
+      estado:         calcEstado(document.getElementById('pac-proxcontrol').value),
+    });
+    toast('Paciente guardado ✓');
+    cerrarModal('modal-paciente');
+    cargarPacientes();
+    cargarDashboard();
+  } catch(e) { toast('Error al guardar','err'); }
+}
+
+async function eliminarPaciente(id) {
+  if (!confirm('¿Eliminar este paciente?')) return;
+  try {
+    await api({ action: 'deletePaciente', id });
+    toast('Paciente eliminado');
+    cargarPacientes();
+    cargarDashboard();
+  } catch(e) { toast('Error al eliminar','err'); }
+}
+
+// ── ALERTAS ───────────────────────────────────────────────────────────────────
+async function cargarAlertas() {
+  document.getElementById('body-alertas').innerHTML =
+    '<tr><td colspan="6"><div class="loading"><div class="spinner"></div><br>Cargando...</div></td></tr>';
+  try {
+    const r = await api({ action: 'getPacientes' });
+    const alertas = (r.pacientes||[]).filter(p => {
+      const est = calcEstado(p.PROXIMO_CONTROL);
+      return est === 'VENCIDO' || est === 'PRÓXIMO';
+    }).sort((a,b) => new Date(a.PROXIMO_CONTROL) - new Date(b.PROXIMO_CONTROL));
+    const tbody = document.getElementById('body-alertas');
+    if (!alertas.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--verde);padding:30px;font-weight:600">✓ Sin alertas pendientes</td></tr>';
+      return;
+    }
+    tbody.innerHTML = alertas.map(p => {
+      const est = calcEstado(p.PROXIMO_CONTROL);
+      const cls = est === 'VENCIDO' ? 'alerta-row vencido' : 'alerta-row';
+      const badge = est === 'VENCIDO' ? 'badge-rojo' : 'badge-amarillo';
+      return `<tr class="${cls}">
+        <td><strong>${p.APELLIDO_NOMBRE||'—'}</strong></td>
+        <td>${p.DNI||'—'}</td>
+        <td>${p.TELEFONO||'—'}</td>
+        <td>${p.DIRECCION||'—'}</td>
+        <td>${formatFecha(p.PROXIMO_CONTROL)}</td>
+        <td><span class="badge ${badge}">${est}</span></td>
+      </tr>`;
+    }).join('');
+  } catch(e) { toast('Error al cargar alertas','err'); }
+}
+
+// ── CONTROL DIARIO ────────────────────────────────────────────────────────────
+let diarioData = {};
+
+function initDiario() {
+  const mes = new Date().getMonth() + 1;
+  const dia = new Date().getDate();
+  document.getElementById('sel-mes').value  = mes;
+  document.getElementById('inp-dia').value  = dia;
+  renderVacunasGrid();
+  cargarDiario();
+}
+
+function renderVacunasGrid() {
+  const cont = document.getElementById('diario-container');
+  cont.innerHTML = `<div class="vac-grid">${VACUNAS.map(v => `
+    <div class="vac-item">
+      <div class="vac-name">${v}</div>
+      <div class="vac-input-row">
+        <label>Dosis</label>
+        <input type="number" min="0" value="0" class="vac-dosis" data-vac="${v}" style="width:60px">
+      </div>
+      <div class="vac-input-row">
+        <label>Stock</label>
+        <input type="number" min="0" value="0" class="vac-stock" data-vac="${v}" style="width:60px;background:var(--azul3);" readonly>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+async function cargarDiario() {
+  const mes  = document.getElementById('sel-mes').value;
+  const anio = document.getElementById('inp-anio').value;
+  try {
+    const r = await api({ action: 'getDiario', mes, anio });
+    diarioData = {};
+    (r.diario||[]).forEach(row => {
+      const key = `${row[2]}`;
+      if (!diarioData[key]) diarioData[key] = {};
+      diarioData[key][row[3]] = row[4];
+    });
+  } catch(e) { console.error(e); }
+}
+
+async function guardarDiario() {
+  const mes  = document.getElementById('sel-mes').value;
+  const anio = document.getElementById('inp-anio').value;
+  const dia  = document.getElementById('inp-dia').value;
+  const inputs = document.querySelectorAll('.vac-dosis');
+  let saved = 0;
+  for (const inp of inputs) {
+    const cant = parseInt(inp.value) || 0;
+    if (cant > 0) {
+      await api({ action:'saveDiario', mes, anio, dia, vacuna: inp.dataset.vac, cantidad: cant });
+      saved++;
+    }
+  }
+  toast(saved > 0 ? `${saved} vacuna(s) guardadas ✓` : 'No hay dosis para guardar','ok');
+}
+
+// ── STOCK ─────────────────────────────────────────────────────────────────────
+async function cargarStock() {
+  const tbody = document.getElementById('body-stock');
+  tbody.innerHTML = '<tr><td colspan="11"><div class="loading"><div class="spinner"></div><br>Cargando...</div></td></tr>';
+  try {
+    const r = await api({ action: 'getStock' });
+    const stockMap = {};
+    (r.stock||[]).forEach(s => stockMap[s.VACUNA] = s);
+
+    tbody.innerHTML = VACUNAS.map(v => {
+      const s = stockMap[v] || {};
+      const sf = parseFloat(s.STOCK_FINAL||0);
+      const cls = sf < 5 ? 'stock-bajo' : 'stock-ok';
+      const fields = ['STOCK_INICIAL','X_REMITO','X_REDISTRIB','TOTAL_INGRESOS',
+                      'APLICADAS','REDISTRIB_EGRESO','DECOMISO','TOTAL_EGRESOS',
+                      'STOCK_FINAL','OBSERVACIONES'];
+      return `<tr>
+        <td style="font-weight:500;white-space:nowrap">${v}</td>
+        ${fields.map((f,i) => {
+          const readonly = ['TOTAL_INGRESOS','APLICADAS','TOTAL_EGRESOS'].includes(f);
+          const isFinal  = f === 'STOCK_FINAL';
+          const isObs    = f === 'OBSERVACIONES';
+          if (isObs) return `<td><input type="text" data-vac="${v}" data-field="${f}" value="${s[f]||''}" style="width:120px;padding:4px 8px;border:1px solid var(--gris2);border-radius:6px;font-size:12px"></td>`;
+          if (readonly || isFinal) return `<td class="${isFinal ? cls : ''}" style="font-family:'DM Mono',monospace;font-weight:600">${s[f]||0}</td>`;
+          return `<td><input type="number" min="0" data-vac="${v}" data-field="${f}" value="${s[f]||0}" style="width:65px;padding:4px 8px;border:1px solid var(--gris2);border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;text-align:center"></td>`;
+        }).join('')}
+      </tr>`;
+    }).join('');
+  } catch(e) { toast('Error al cargar stock','err'); }
+}
+
+async function guardarStock() {
+  const rows = document.querySelectorAll('#body-stock tr');
+  for (const row of rows) {
+    const inputs = row.querySelectorAll('input[data-vac]');
+    if (!inputs.length) continue;
+    const vac = inputs[0].dataset.vac;
+    const data = { action:'saveStock', vacuna: vac };
+    inputs.forEach(inp => { data[inp.dataset.field.toLowerCase()] = inp.value; });
+    // calcular totales
+    const ini  = parseFloat(data.stock_inicial||0);
+    const rem  = parseFloat(data.x_remito||0);
+    const red  = parseFloat(data.x_redistrib||0);
+    const apl  = parseFloat(data.aplicadas||0);
+    const rde  = parseFloat(data.redistrib_egreso||0);
+    const dec  = parseFloat(data.decomiso||0);
+    data.total_ingresos = rem + red;
+    data.total_egresos  = apl + rde + dec;
+    data.stock_final    = ini + data.total_ingresos - data.total_egresos;
+    await api(data);
+  }
+  toast('Stock guardado ✓');
+  cargarStock();
+}
+
+// ── CIRCULAR 11 ───────────────────────────────────────────────────────────────
+async function cargarCircular() {
+  const mes  = document.getElementById('sel-mes-circ').value;
+  const anio = document.getElementById('inp-anio-circ').value;
+  try {
+    const r = await api({ action:'getCircular', mes, anio });
+    const data = r.circular || [];
+    const cols = ['BAJO PESO','RIESGO NUTRICIONAL','NORMAL','SOBREPESO','OBESO','EN RECUPERACIÓN','FAMILIA DE RIESGO'];
+    const extraGrupos = [
+      { label: 'NIÑOS SÍNDROME DE DOWN', manual: true },
+      { label: 'NIÑOS PREMATUROS',       manual: true },
+    ];
+    const tbody = document.getElementById('body-circular');
+
+    const autoRows = data.map(g => {
+      const total = cols.reduce((s, c) => s + (g[c]||0), 0);
+      return `<tr>
+        <td>${g.grupo}</td>
+        ${cols.map(c => `<td>${g[c]||0}</td>`).join('')}
+        <td style="font-weight:600;font-family:'DM Mono',monospace">${total}</td>
+      </tr>`;
+    });
+
+    const manualRows = extraGrupos.map(g => `<tr>
+      <td style="font-style:italic">${g.label}</td>
+      ${cols.map(c => `<td><input type="number" min="0" value="0" style="width:45px;padding:3px;border:1px solid var(--gris2);border-radius:4px;font-size:12px;text-align:center"></td>`).join('')}
+      <td>—</td>
+    </tr>`);
+
+    // Fila TOTAL
+    const totales = cols.map((c, ci) => data.reduce((s,g) => s+(g[c]||0), 0));
+    const totalRow = `<tr style="background:var(--azul);color:white;font-weight:600">
+      <td>TOTAL</td>
+      ${totales.map(t => `<td>${t}</td>`).join('')}
+      <td>${totales.reduce((a,b)=>a+b,0)}</td>
+    </tr>`;
+
+    tbody.innerHTML = [...autoRows, ...manualRows, totalRow].join('');
+  } catch(e) { toast('Error al cargar circular','err'); }
+
+  // Totales embarazadas/nodrizas
+  ['emb-eut','emb-des','emb-obe'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      const t = ['emb-eut','emb-des','emb-obe'].reduce((s,i) => s + (parseInt(document.getElementById(i).value)||0), 0);
+      document.getElementById('emb-total').textContent = t;
+    });
+  });
+  ['nod-eut','nod-bp'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      const t = (parseInt(document.getElementById('nod-eut').value)||0) +
+                (parseInt(document.getElementById('nod-bp').value)||0);
+      document.getElementById('nod-total').textContent = t;
+    });
+  });
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function cerrarModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function formatFecha(str) {
+  if (!str) return '—';
+  const d = new Date(str);
+  if (isNaN(d)) return str;
+  return d.toLocaleDateString('es-AR');
+}
+
+// Init: setear mes actual
+window.onload = () => {
+  const mes = new Date().getMonth() + 1;
+  document.getElementById('sel-mes').value      = mes;
+  document.getElementById('sel-mes-circ').value = mes;
+};
+</script>
+</body>
+</html>
