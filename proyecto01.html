@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Proyecto 01 — GESTIÓN DE PACIENTES Y VACUNAS</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -561,6 +562,12 @@ tr:hover td { background: var(--azul3); }
       <div class="nav-item" onclick="navTo('circular')">
         <span class="nav-icon">📋</span> Circular N°11
       </div>
+      <div class="nav-item" onclick="navTo('mensual')">
+        <span class="nav-icon">💊</span> Planilla Mensual
+      </div>
+      <div class="nav-item" onclick="navTo('metas')">
+        <span class="nav-icon">📈</span> Avance de Metas
+      </div>
     </nav>
     <div class="sidebar-footer">
       <div class="caps-badge" id="caps-badge">CAPS: —</div>
@@ -774,6 +781,134 @@ tr:hover td { background: var(--azul3); }
             <tr><td style="font-weight:600">TOTAL</td><td><span id="nod-total" style="font-weight:600;font-family:'DM Mono',monospace">0</span></td></tr>
           </table>
         </div>
+      </div>
+    </div>
+
+
+    <!-- PLANILLA MENSUAL DE VACUNAS -->
+    <div id="page-mensual" style="display:none">
+      <div class="page-header">
+        <div class="page-title">💊 Planilla Mensual de Vacunas</div>
+        <div class="page-sub">Registro único — actualiza Control Diario, Stock y Metas automáticamente</div>
+      </div>
+
+      <!-- Formulario de registro -->
+      <div class="card" style="border-left:4px solid var(--verde)">
+        <div class="card-title">➕ Registrar Vacuna Aplicada</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Vacuna *</label>
+            <select id="men-vacuna" onchange="actualizarDosis()">
+              <option value="">— Seleccionar —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>N° de Dosis *</label>
+            <select id="men-dosis">
+              <option value="">— Primero elegí vacuna —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Grupo Etario *</label>
+            <select id="men-grupo">
+              <option value="">— Seleccionar —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha de Aplicación *</label>
+            <input type="date" id="men-fecha">
+          </div>
+          <div class="form-group">
+            <label>Cantidad de dosis</label>
+            <input type="number" id="men-cantidad" value="1" min="1" max="50" style="width:80px">
+          </div>
+          <div class="form-group">
+            <label>Observaciones</label>
+            <input type="text" id="men-obs" placeholder="Opcional">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-success" onclick="registrarVacunaMensual()">💉 Registrar</button>
+          <button class="btn btn-ghost" onclick="limpiarFormMensual()">Limpiar</button>
+        </div>
+      </div>
+
+      <!-- Tabla resumen del mes -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <div class="card-title" style="margin:0">Resumen del Mes</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <select id="men-sel-mes" onchange="cargarMensual()" style="padding:8px 12px;border:1.5px solid var(--gris2);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px">
+              <option value="1">Enero</option><option value="2">Febrero</option>
+              <option value="3">Marzo</option><option value="4">Abril</option>
+              <option value="5">Mayo</option><option value="6">Junio</option>
+              <option value="7">Julio</option><option value="8">Agosto</option>
+              <option value="9">Septiembre</option><option value="10">Octubre</option>
+              <option value="11">Noviembre</option><option value="12">Diciembre</option>
+            </select>
+            <input type="number" id="men-sel-anio" value="2026" style="width:80px;padding:8px;border:1.5px solid var(--gris2);border-radius:8px;font-size:13px" onchange="cargarMensual()">
+          </div>
+        </div>
+        <div class="tabla-wrap">
+          <table id="tabla-mensual">
+            <thead>
+              <tr>
+                <th>Fecha</th><th>Vacuna</th><th>Dosis</th><th>Grupo Etario</th><th>Cantidad</th><th>Obs.</th>
+              </tr>
+            </thead>
+            <tbody id="body-mensual">
+              <tr><td colspan="6"><div class="loading"><div class="spinner"></div><br>Cargando...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="mensual-stats" style="margin-top:14px;display:flex;gap:14px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+
+    <!-- AVANCE DE METAS -->
+    <div id="page-metas" style="display:none">
+      <div class="page-header">
+        <div class="page-title">📈 Avance de Metas</div>
+        <div class="page-sub">Progreso anual de vacunación por vacuna y grupo etario</div>
+      </div>
+
+      <!-- Selector de vacuna y configuración -->
+      <div class="card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Vacuna</label>
+            <select id="meta-vacuna" onchange="cargarMeta()">
+              <option value="">— Seleccionar —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Dosis</label>
+            <select id="meta-dosis" onchange="cargarMeta()">
+              <option value="">— Seleccionar —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Grupo Etario</label>
+            <select id="meta-grupo" onchange="cargarMeta()">
+              <option value="">Todos los grupos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Año</label>
+            <input type="number" id="meta-anio" value="2026" style="width:90px" onchange="cargarMeta()">
+          </div>
+          <div class="form-group">
+            <label>Población Objetivo (meta anual)</label>
+            <input type="number" id="meta-poblacion" placeholder="Ej: 281" onchange="cargarMeta()" style="width:120px">
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráfico de avance -->
+      <div class="card">
+        <div id="meta-header" style="margin-bottom:16px"></div>
+        <canvas id="meta-chart" style="max-height:380px"></canvas>
+        <div id="meta-tabla-wrap" style="margin-top:20px"></div>
       </div>
     </div>
 
@@ -1310,6 +1445,360 @@ window.onload = () => {
   document.getElementById('sel-mes').value      = mes;
   document.getElementById('sel-mes-circ').value = mes;
 };
+
+// ── DATOS VACUNAS CON DOSIS Y GRUPOS ETARIOS ─────────────────────────────────
+const VACUNAS_DOSIS = {
+  "BCG":                   ["D. Única"],
+  "Hepatitis B":           ["Dosis Neonatal"],
+  "Sextuple":              ["1° Dosis", "2° Dosis", "3° Dosis"],
+  "IPV-SALK":              ["1° Dosis", "2° Dosis", "3° Dosis", "4° Refuerzo"],
+  "QUINTUPLE (DPT+Hib+HB)":["1° Dosis", "2° Dosis", "3° Dosis", "1er Refuerzo", "2do Refuerzo"],
+  "ROTAVIRUS":             ["1° Dosis", "2° Dosis"],
+  "NEUMOCOCO CONJUGADA 20":["1° Dosis", "2° Dosis", "1°D/DU", "Refuerzo"],
+  "MENINGOCÓCCICA 4V":     ["1°D/DU", "2° Dosis", "3° Dosis", "D. Única"],
+  "TRIPLE VIRAL (SRP)":    ["1° Dosis", "2° Dosis"],
+  "VARICELA":              ["1° Dosis", "2° Dosis"],
+  "HEPATITIS A (pediátrica)":["D. Única"],
+  "HEPATITIS B 10µg (pediátrica)":["1° Dosis", "2° Dosis"],
+  "HEPATITIS B 20µg (adulto)":["1° Dosis", "2° Dosis"],
+  "TRIPLE BACTERIANA CELULAR (DPT)":["3ra Ref.", "1er Ref."],
+  "TRIPLE BACTERIANA ACELULAR (DPTa)":["Ref.", "1°D/DU", "2do Ref."],
+  "DOBLE BACTERIANA (dt)": ["1° Dosis", "2° Dosis", "3° Dosis", "Refuerzo"],
+  "VIRUS PAPILOMA HUMANO (HPV)":["1° Dosis", "2° Dosis"],
+  "ANTIGRIPAL PEDIÁTRICA": ["D. Única", "2° Dosis"],
+  "ANTIGRIPAL ADULTO — INFLUVAC":["D. Única"],
+  "ANTIGRIPAL ADULTO — AGRIPAL":["D. Única"],
+  "ANTIGRIPAL ADULTO — FLUXVIR":["D. Única"],
+  "SALK":                  ["1° Dosis", "2° Dosis", "Refuerzo"],
+  "NEUMOCOCO 23 VALENTE":  ["D. Única"],
+  "VSR":                   ["D. Única"],
+  "QDENGA":                ["1° Dosis", "2° Dosis"],
+};
+
+const GRUPOS_ETARIOS = [
+  "< 12 horas",
+  "Antes del Alta",
+  "Hasta 7 días",
+  "8 días a 11 meses",
+  "1 año",
+  "2 años",
+  "3 a 6 años",
+  "7 a 10 años",
+  "11 a 20 años",
+  "2 a 4 años",
+  "41 a 64 años",
+  "Embarazadas",
+  "Puérperas",
+  "65 años y más",
+  "Grupo de riesgo",
+  "Personal de salud",
+];
+
+const MESES_NOMBRES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                       "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+let metaChart = null;
+
+// Poblar selects de vacunas
+function poblarSelectsVacunas() {
+  const selMen  = document.getElementById('men-vacuna');
+  const selMeta = document.getElementById('meta-vacuna');
+  const selGMen = document.getElementById('men-grupo');
+  const selGMeta= document.getElementById('meta-grupo');
+
+  Object.keys(VACUNAS_DOSIS).forEach(v => {
+    selMen.add(new Option(v, v));
+    selMeta.add(new Option(v, v));
+  });
+  GRUPOS_ETARIOS.forEach(g => {
+    selGMen.add(new Option(g, g));
+    selGMeta.add(new Option(g, g));
+  });
+}
+
+function actualizarDosis() {
+  const vac   = document.getElementById('men-vacuna').value;
+  const sel   = document.getElementById('men-dosis');
+  sel.innerHTML = '';
+  if (!vac) { sel.add(new Option('— Primero elegí vacuna —','')); return; }
+  (VACUNAS_DOSIS[vac]||[]).forEach(d => sel.add(new Option(d, d)));
+}
+
+function actualizarDosisMeta() {
+  const vac = document.getElementById('meta-vacuna').value;
+  const sel = document.getElementById('meta-dosis');
+  sel.innerHTML = '<option value="">Todas las dosis</option>';
+  if (vac) (VACUNAS_DOSIS[vac]||[]).forEach(d => sel.add(new Option(d, d)));
+  cargarMeta();
+}
+
+function limpiarFormMensual() {
+  ['men-vacuna','men-dosis','men-grupo'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('men-cantidad').value = 1;
+  document.getElementById('men-obs').value = '';
+  actualizarDosis();
+}
+
+// ── REGISTRAR VACUNA MENSUAL ──────────────────────────────────────────────────
+async function registrarVacunaMensual() {
+  const vacuna   = document.getElementById('men-vacuna').value;
+  const dosis    = document.getElementById('men-dosis').value;
+  const grupo    = document.getElementById('men-grupo').value;
+  const fecha    = document.getElementById('men-fecha').value;
+  const cantidad = parseInt(document.getElementById('men-cantidad').value) || 1;
+  const obs      = document.getElementById('men-obs').value;
+
+  if (!vacuna || !dosis || !grupo || !fecha) {
+    toast('Completá vacuna, dosis, grupo etario y fecha', 'err'); return;
+  }
+
+  const fechaObj = new Date(fecha);
+  const mes      = fechaObj.getMonth() + 1;
+  const anio     = fechaObj.getFullYear();
+  const dia      = fechaObj.getDate();
+
+  try {
+    // 1. Guardar en planilla mensual
+    await api({
+      action:   'saveMensual',
+      vacuna, dosis, grupo, fecha,
+      mes, anio, dia, cantidad, obs
+    });
+
+    // 2. Actualizar control diario (mismo endpoint saveDiario)
+    await api({
+      action: 'saveDiario',
+      mes, anio, dia, vacuna, cantidad
+    });
+
+    // 3. Actualizar stock (leer actual y restar)
+    const stockR = await api({ action: 'getStock' });
+    const stockActual = (stockR.stock||[]).find(s => s.VACUNA === vacuna);
+    if (stockActual) {
+      const nuevasAplicadas = (parseFloat(stockActual.APLICADAS)||0) + cantidad;
+      const nuevoEgreso     = (parseFloat(stockActual.TOTAL_EGRESOS)||0) + cantidad;
+      const nuevoFinal      = (parseFloat(stockActual.STOCK_FINAL)||0) - cantidad;
+      await api({
+        action: 'saveStock',
+        vacuna,
+        stock_inicial:    stockActual.STOCK_INICIAL || 0,
+        x_remito:         stockActual.X_REMITO || 0,
+        x_redistrib:      stockActual.X_REDISTRIB || 0,
+        total_ingresos:   stockActual.TOTAL_INGRESOS || 0,
+        aplicadas:        nuevasAplicadas,
+        redistrib_egreso: stockActual.REDISTRIB_EGRESO || 0,
+        decomiso:         stockActual.DECOMISO || 0,
+        total_egresos:    nuevoEgreso,
+        stock_final:      nuevoFinal,
+        observaciones:    stockActual.OBSERVACIONES || ''
+      });
+    }
+
+    toast(`✓ ${cantidad} dosis de ${vacuna} (${dosis}) registradas`);
+    limpiarFormMensual();
+    cargarMensual();
+  } catch(e) {
+    console.error(e);
+    toast('Error al registrar', 'err');
+  }
+}
+
+// ── CARGAR RESUMEN MENSUAL ────────────────────────────────────────────────────
+async function cargarMensual() {
+  const mes  = document.getElementById('men-sel-mes').value;
+  const anio = document.getElementById('men-sel-anio').value;
+  const tbody = document.getElementById('body-mensual');
+  tbody.innerHTML = '<tr><td colspan="6"><div class="loading"><div class="spinner"></div><br>Cargando...</div></td></tr>';
+
+  try {
+    const r = await api({ action: 'getMensual', mes, anio });
+    const rows = r.mensual || [];
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--texto2);padding:30px">Sin registros para este mes</td></tr>';
+      document.getElementById('mensual-stats').innerHTML = '';
+      return;
+    }
+
+    tbody.innerHTML = rows.map(row => `<tr>
+      <td>${formatFecha(row[3])}</td>
+      <td><strong>${row[2]}</strong></td>
+      <td><span class="badge badge-verde">${row[7]}</span></td>
+      <td>${row[6]}</td>
+      <td style="font-family:'DM Mono',monospace;font-weight:600">${row[4]}</td>
+      <td style="color:var(--texto2);font-size:12px">${row[8]||''}</td>
+    </tr>`).join('');
+
+    // Stats
+    const total = rows.reduce((s,r) => s + (parseInt(r[4])||0), 0);
+    const porVacuna = {};
+    rows.forEach(r => {
+      const k = r[2];
+      porVacuna[k] = (porVacuna[k]||0) + (parseInt(r[4])||0);
+    });
+    const top3 = Object.entries(porVacuna).sort((a,b)=>b[1]-a[1]).slice(0,3);
+
+    document.getElementById('mensual-stats').innerHTML = `
+      <div class="stat-card" style="flex:0 0 auto">
+        <div class="stat-label">Total dosis ${MESES_NOMBRES[mes]}</div>
+        <div class="stat-val">${total}</div>
+      </div>
+      ${top3.map(([v,n]) => `
+      <div class="stat-card verde" style="flex:0 0 auto">
+        <div class="stat-label">${v.split('(')[0].trim()}</div>
+        <div class="stat-val">${n}</div>
+      </div>`).join('')}
+    `;
+  } catch(e) { toast('Error al cargar','err'); }
+}
+
+// ── AVANCE DE METAS ───────────────────────────────────────────────────────────
+async function cargarMeta() {
+  const vacuna = document.getElementById('meta-vacuna').value;
+  const dosis  = document.getElementById('meta-dosis').value;
+  const grupo  = document.getElementById('meta-grupo').value;
+  const anio   = document.getElementById('meta-anio').value;
+  const pob    = parseInt(document.getElementById('meta-poblacion').value) || 0;
+
+  if (!vacuna) return;
+
+  document.getElementById('meta-header').innerHTML = `
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
+      <div>
+        <div style="font-size:18px;font-weight:600;color:var(--azul)">${vacuna}</div>
+        <div style="font-size:13px;color:var(--texto2)">${dosis||'Todas las dosis'} ${grupo ? '— '+grupo : ''} — Año ${anio}</div>
+      </div>
+      ${pob ? `<div class="stat-card" style="flex:0 0 auto"><div class="stat-label">Población objetivo</div><div class="stat-val">${pob}</div></div>` : ''}
+    </div>`;
+
+  try {
+    const r = await api({ action: 'getMensualAnio', vacuna, dosis, grupo, anio });
+    const porMes = r.porMes || {};
+
+    // Acumulado mes a mes
+    const mensual = [];
+    const acumulado = [];
+    const metaMensual = pob ? Array.from({length:12},(_,i)=>Math.round(pob*(i+1)/12)) : [];
+    let suma = 0;
+
+    for (let m = 1; m <= 12; m++) {
+      const cant = parseInt(porMes[m]||0);
+      mensual.push(cant);
+      suma += cant;
+      acumulado.push(suma);
+    }
+
+    const labels = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+    // Destruir chart anterior
+    if (metaChart) { metaChart.destroy(); metaChart = null; }
+
+    const ctx = document.getElementById('meta-chart').getContext('2d');
+    const datasets = [
+      {
+        label: 'Acumulado aplicado',
+        data: acumulado,
+        borderColor: '#1E8449',
+        backgroundColor: 'rgba(30,132,73,0.08)',
+        borderWidth: 2.5,
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: '#1E8449',
+      },
+      {
+        label: 'Dosis mensuales',
+        data: mensual,
+        borderColor: '#2E86C1',
+        backgroundColor: 'rgba(46,134,193,0.15)',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.3,
+        pointBackgroundColor: '#2E86C1',
+        type: 'bar',
+      }
+    ];
+
+    if (pob) {
+      datasets.push({
+        label: 'Meta acumulada',
+        data: metaMensual,
+        borderColor: '#E67E22',
+        borderDash: [6,3],
+        borderWidth: 2,
+        fill: false,
+        tension: 0,
+        pointRadius: 0,
+      });
+    }
+
+    metaChart = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'top', labels: { font: { family: 'DM Sans', size: 12 } } },
+          tooltip: {
+            callbacks: {
+              footer: (items) => {
+                if (!pob) return '';
+                const ac = items.find(i => i.dataset.label === 'Acumulado aplicado');
+                if (ac) return `Cobertura: ${((ac.raw/pob)*100).toFixed(1)}%`;
+                return '';
+              }
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+          x: { grid: { color: 'rgba(0,0,0,0.05)' } }
+        }
+      }
+    });
+
+    // Tabla de datos
+    document.getElementById('meta-tabla-wrap').innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr>
+            <th style="background:var(--azul);color:white;padding:8px 12px;text-align:left">Mes</th>
+            <th style="background:var(--azul);color:white;padding:8px 12px;text-align:center">Mensual</th>
+            <th style="background:var(--azul);color:white;padding:8px 12px;text-align:center">Acumulado</th>
+            ${pob ? '<th style="background:var(--azul);color:white;padding:8px 12px;text-align:center">Meta</th><th style="background:var(--azul);color:white;padding:8px 12px;text-align:center">% Cobertura</th>' : ''}
+          </tr>
+        </thead>
+        <tbody>
+          ${labels.map((l,i) => `
+          <tr style="background:${i%2===0?'var(--gris)':'white'}">
+            <td style="padding:7px 12px;font-weight:500">${l}</td>
+            <td style="padding:7px 12px;text-align:center;font-family:'DM Mono',monospace">${mensual[i]||0}</td>
+            <td style="padding:7px 12px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;color:var(--verde)">${acumulado[i]}</td>
+            ${pob ? `<td style="padding:7px 12px;text-align:center;font-family:'DM Mono',monospace;color:var(--naranja)">${metaMensual[i]}</td>
+            <td style="padding:7px 12px;text-align:center;font-weight:600;color:${(acumulado[i]/pob)>=((i+1)/12)?'var(--verde)':'var(--rojo)'}">${((acumulado[i]/pob)*100).toFixed(1)}%</td>` : ''}
+          </tr>`).join('')}
+          <tr style="background:var(--azul);color:white;font-weight:600">
+            <td style="padding:8px 12px">TOTAL</td>
+            <td style="padding:8px 12px;text-align:center;font-family:'DM Mono',monospace">${mensual.reduce((a,b)=>a+b,0)}</td>
+            <td style="padding:8px 12px;text-align:center;font-family:'DM Mono',monospace">${suma}</td>
+            ${pob ? `<td style="padding:8px 12px;text-align:center">${pob}</td><td style="padding:8px 12px;text-align:center">${((suma/pob)*100).toFixed(1)}%</td>` : ''}
+          </tr>
+        </tbody>
+      </table>`;
+
+  } catch(e) { console.error(e); toast('Error al cargar metas','err'); }
+}
+
+// Inicializar selects al cargar
+document.addEventListener('DOMContentLoaded', () => {
+  poblarSelectsVacunas();
+  document.getElementById('meta-vacuna').addEventListener('change', actualizarDosisMeta);
+  // Setear fecha actual
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('men-fecha').value = hoy;
+  const mes = new Date().getMonth()+1;
+  document.getElementById('men-sel-mes').value  = mes;
+});
 </script>
 </body>
 </html>
